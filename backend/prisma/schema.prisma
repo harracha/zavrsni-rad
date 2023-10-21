@@ -10,13 +10,63 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model User {
-  userId   String @id @default(cuid())
-  name     String
-  lastName String
-  JMBAG    String
-  email    String @unique
+model Teacher {
+  teacherId      String      @id @default(cuid())
+  firstName      String
+  lastName       String
+  email          String      @unique
+  password       String
+  profilePicture String?
+  Role           SystemRole  @default(PROFESSOR)
+  classGroup     classGroup?
+  labGroup       labGroup?
 
-  @@index([userId])
+  @@index([teacherId])
   @@index([email])
+}
+
+model Student {
+  studentId      String     @id @default(cuid())
+  firstName      String
+  lastName       String
+  email          String     @unique
+  password       String
+  JMBAG          String     @unique
+  acYear         String?
+  profilePicture String?
+  Role           SystemRole @default(STUDENT)
+  classGroupId   String     @unique
+  classGroup     classGroup @relation(fields: [classGroupId], references: [groupId])
+  labGroupId     String     @unique
+  labGroup       labGroup   @relation(fields: [labGroupId], references: [groupId])
+
+  @@index([studentId])
+  @@index([JMBAG])
+  @@index([email])
+}
+
+model classGroup {
+  groupId   String    @id @default(cuid())
+  groupName String    @unique
+  teacher   Teacher   @relation(fields: [teacherId], references: [teacherId])
+  teacherId String    @unique
+  Students  Student[]
+
+  @@index([groupName])
+}
+
+model labGroup {
+  groupId   String    @id @default(cuid())
+  groupName String    @unique
+  teacher   Teacher?  @relation(fields: [teacherId], references: [teacherId])
+  teacherId String?   @unique
+  Students  Student[]
+
+  @@index([groupName])
+}
+
+enum SystemRole {
+  PROFESSOR
+  ASSISTANT
+  STUDENT
 }

@@ -10,8 +10,7 @@ const app: Application = express();
 const port = process.env.PORT || 8000;
 
 app.get('/', async (req: Request, res: Response) => {
-  const data = await prisma.user.findMany();
-  res.send(data)
+  res.send('Hello world')
 });
 
 
