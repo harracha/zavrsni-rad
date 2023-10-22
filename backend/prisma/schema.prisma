@@ -18,34 +18,38 @@ model Teacher {
   password       String
   profilePicture String?
   Role           SystemRole  @default(PROFESSOR)
-  classGroup     classGroup?
-  labGroup       labGroup?
+  classGroup     ClassGroup?
+  labGroup       LabGroup?
 
   @@index([teacherId])
   @@index([email])
 }
 
 model Student {
-  studentId      String     @id @default(cuid())
+  studentId      String       @id @default(cuid())
   firstName      String
   lastName       String
-  email          String     @unique
+  email          String       @unique
   password       String
-  JMBAG          String     @unique
+  JMBAG          String       @unique
   acYear         String?
   profilePicture String?
-  Role           SystemRole @default(STUDENT)
-  classGroupId   String     @unique
-  classGroup     classGroup @relation(fields: [classGroupId], references: [groupId])
-  labGroupId     String     @unique
-  labGroup       labGroup   @relation(fields: [labGroupId], references: [groupId])
+  Role           SystemRole   @default(STUDENT)
+  classGroupId   String       @unique
+  classGroup     ClassGroup   @relation(fields: [classGroupId], references: [groupId])
+  labGroupId     String       @unique
+  labGroup       LabGroup     @relation(fields: [labGroupId], references: [groupId])
+  labExercise    LabExercise?
+  Homework       Homework?
+  Midterm        Midterm[]
+  Exam           Exam[]
 
   @@index([studentId])
   @@index([JMBAG])
   @@index([email])
 }
 
-model classGroup {
+model ClassGroup {
   groupId   String    @id @default(cuid())
   groupName String    @unique
   teacher   Teacher   @relation(fields: [teacherId], references: [teacherId])
@@ -55,7 +59,7 @@ model classGroup {
   @@index([groupName])
 }
 
-model labGroup {
+model LabGroup {
   groupId   String    @id @default(cuid())
   groupName String    @unique
   teacher   Teacher?  @relation(fields: [teacherId], references: [teacherId])
@@ -65,8 +69,57 @@ model labGroup {
   @@index([groupName])
 }
 
+model LabExercise {
+  exerciseId String  @id @default(cuid())
+  labPoints  Json?
+  kpzPoints  Json?
+  studentId  String  @unique
+  Student    Student @relation(fields: [studentId], references: [studentId])
+}
+
+model Homework {
+  homeworkId String  @id @default(cuid())
+  studentId  String  @unique
+  Student    Student @relation(fields: [studentId], references: [studentId])
+  points     Json?
+}
+
+model Midterm {
+  midtermId       String      @id @default(cuid())
+  exam_scan       String?
+  answers_written Json
+  points_written  Int?
+  points_oral     Int?
+  studentId       String
+  Student         Student     @relation(fields: [studentId], references: [studentId])
+  MidtermType     MidtermType
+}
+
+model Exam {
+  examId          String   @id @default(cuid())
+  exam_scan       String?
+  answers_written Json?
+  points_written  Int?
+  points_oral     Int?
+  studentId       String
+  Student         Student  @relation(fields: [studentId], references: [studentId])
+  ExamType        ExamType
+}
+
 enum SystemRole {
   PROFESSOR
   ASSISTANT
   STUDENT
+}
+
+enum MidtermType {
+  MI
+  ZI
+}
+
+enum ExamType {
+  JIR
+  LJIR
+  ZIR
+  DIR
 }
