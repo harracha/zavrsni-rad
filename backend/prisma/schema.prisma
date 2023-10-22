@@ -47,6 +47,8 @@ model Student {
   @@index([studentId])
   @@index([JMBAG])
   @@index([email])
+  @@index([labGroupId])
+  @@index([classGroupId])
 }
 
 model ClassGroup {
