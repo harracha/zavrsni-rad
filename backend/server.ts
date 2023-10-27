@@ -1,7 +1,6 @@
 import express, { Express, Request, Response , Application } from 'express';
 import dotenv from 'dotenv';
 import session from 'express-session'
-import prisma from './src/lib/prisma';
 import bodyParser from 'body-parser';
 import teacherRouter from './src/routers/teacher-router';
 import studentRouter from './src/routers/student-router';
@@ -18,6 +17,7 @@ dotenv.config();
 
 const app: Application = express();
 const port = process.env.PORT || 8000;
+app.use(bodyParser.urlencoded({ extended: true }));
 
 app.use(bodyParser.json())
 app.use(cors())
