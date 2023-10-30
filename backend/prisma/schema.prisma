@@ -112,6 +112,7 @@ enum SystemRole {
   PROFESSOR
   ASSISTANT
   STUDENT
+  ADMIN
 }
 
 enum MidtermType {
