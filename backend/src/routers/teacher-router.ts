@@ -1,8 +1,9 @@
 import { Router, Request, Response } from 'express';
 import prisma from '../lib/prisma';
 import { Prisma } from '.prisma/client';
-import { create, deleteTeacher, update } from '../controllers/teacher-controller';
-import { userHasRole } from '../middleware/teacher-middleware';
+import { create, deleteTeacher, list, update } from '../controllers/teacher-controller';
+import { userHasRole } from '../lib/middleware/user-role-middleware';
+import { sessionUserExists } from '../lib/middleware/session-middleware';
 
 
 const teacherRouter = Router();
@@ -35,38 +36,33 @@ teacherRouter.post('/login', async (req: Request, res:Response, next:Function) =
             req.session.user = {email: response.email, role: response.Role}
         }
         res.status(200).send(req.session.user)
+    }).catch((error) => {
+        res.status(500).send({error: error, message: 'Failed connecting to database'})
     });
 })
 
 // ADMIN FUNCTION -> list all teachers in the database 
-teacherRouter.get('/list', userHasRole(['ADMIN']), async (req: Request, res: Response, next: Function) => {
-    const teachers = await prisma.teacher.findMany();
-    res.status(200).send(teachers)
+teacherRouter.get('/list', sessionUserExists, userHasRole(['ADMIN']), async (req: Request, res: Response, next: Function) => {
+    try{
+        const teachers = await list();
+        res.status(200).send(teachers)
+    } catch(error) {
+        res.status(500).send(error)
+    }
 });
 
-// ADMIN / TEACHER / ASSISTANT FUNCTION -> list students
-teacherRouter.get('/list/students/:classGroupId',  (req: Request, res: Response, next: Function) => {
-    const groupId = req.params.classGroupId;
-
-    if(groupId) {
-        // if groupId is defined, list all students belonging to the group
-    } else {
-        // list all students
+// ADMIN FUNCTION -> list teachers by class group
+teacherRouter.get('/list/:classGroupId', sessionUserExists, userHasRole(['ADMIN']), async (req: Request, res: Response, next: Function) => {
+    try{
+        const teachers = await list();
+        res.status(200).send(teachers)
+    } catch(error) {
+        res.status(500).send(error)
     }
-
-    res.send('Hello teacher')
-})
-
-// ADMIN / TEACHER FUNCTION -> list students for certain lab group
-teacherRouter.get('/list/students/:labGroupId',  (req: Request, res: Response, next: Function) => {
-    const groupId = req.params.labGroupId;
+});
 
 
-    res.send('Hello teacher')
-})
-
-
-teacherRouter.post('/create', async (req: Request, res:Response, next: Function) => {
+teacherRouter.post('/create', sessionUserExists, userHasRole(['ADMIN']), async (req: Request, res:Response, next: Function) => {
     const inputData: Prisma.TeacherCreateInput = req.body;
 
     try {
@@ -78,7 +74,7 @@ teacherRouter.post('/create', async (req: Request, res:Response, next: Function)
 
 })
 
-teacherRouter.put('/update/:teacherId', async (req:Request, res: Response, next:Function) => {
+teacherRouter.put('/update/:teacherId', sessionUserExists, userHasRole(['ADMIN']), async (req:Request, res: Response, next:Function) => {
     const teacherId = req.params.teacherId;
     const updateData = req.body
 
@@ -90,7 +86,7 @@ teacherRouter.put('/update/:teacherId', async (req:Request, res: Response, next:
     }
 })
 
-teacherRouter.delete('/delete/:teacherId',  async (req:Request, res: Response, next:Function) => {
+teacherRouter.delete('/delete/:teacherId', sessionUserExists, userHasRole(['ADMIN']),  async (req:Request, res: Response, next:Function) => {
     const teacherId = req.params.teacherId;
     try {
         const deletedTeacher = await deleteTeacher(teacherId);

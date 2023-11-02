@@ -52,6 +52,30 @@ export const deleteTeacher = async (teacherId: string) => {
 }
 
 export const list = async () => {
-    
+    try{
+        const teachers = await prisma.teacher.findMany({
+            where: {
+                Role: "PROFESSOR"
+            }
+        })
+        return teachers
+    } catch(error) {
+        return error
+    }   
 }
+
+/* export const listByClassGroup = async (classG) => {
+    try{
+        const teachers = await prisma.teacher.findMany({
+            where: {
+                Role: "PROFESSOR"
+            }
+        })
+        return teachers
+    } catch(error) {
+        return error
+    }   
+} */
+
+
 
