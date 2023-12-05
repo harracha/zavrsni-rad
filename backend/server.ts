@@ -76,18 +76,3 @@ app.use('/classGroup', classGroupRouter)
 app.listen(port, () => {
   console.log(`Server is at http://localhost:${port}\n\n`);
 });
-
-
-// COULD BE USEFUL
-
-// function requireAuth(req: Request, res: Response, next: Function) {
-//   if (req.session.username) {
-//     next();
-//   } else {
-//     res.status(401).send('Unauthorized');
-//   }
-// }
-
-// router.get('/protected-route', requireAuth, (req: Request, res: Response) => {
-//   res.send('This route is protected. User is authenticated.');
-// });

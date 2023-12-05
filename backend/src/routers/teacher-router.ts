@@ -51,7 +51,7 @@ teacherRouter.get('/list', sessionUserExists, userHasRole(['ADMIN']), async (req
     }
 });
 
-// ADMIN FUNCTION -> list teachers by class group
+// ADMIN FUNCTION -> list teachers by class group, MIGHT NEED TO BE CLASS GROUP NAME 
 teacherRouter.get('/list/:classGroupId', sessionUserExists, userHasRole(['ADMIN']), async (req: Request, res: Response, next: Function) => {
     try{
         const teachers = await list();
@@ -67,7 +67,7 @@ teacherRouter.post('/create', sessionUserExists, userHasRole(['ADMIN']), async (
 
     try {
         const newTeacher = await create(inputData)
-        res.send(newTeacher)
+        res.status(200).send(newTeacher)
     } catch (error){
         throw new Error(error as string)
     }
@@ -80,7 +80,7 @@ teacherRouter.put('/update/:teacherId', sessionUserExists, userHasRole(['ADMIN']
 
     try {
         const updatedTeacher = await update(teacherId, updateData)
-        res.send(updatedTeacher)
+        res.status(200).send(updatedTeacher)
     } catch (error) {
         throw new Error(error as string)
     }
@@ -90,7 +90,7 @@ teacherRouter.delete('/delete/:teacherId', sessionUserExists, userHasRole(['ADMI
     const teacherId = req.params.teacherId;
     try {
         const deletedTeacher = await deleteTeacher(teacherId);
-        res.send(deletedTeacher)
+        res.status(200).send(deletedTeacher)
     } catch(error) {
         throw new Error(error as string)
     }
