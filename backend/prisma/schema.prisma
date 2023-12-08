@@ -89,7 +89,9 @@ model Homework {
 model Midterm {
   midtermId       String      @id @default(cuid())
   exam_scan       String?
-  answers_written Json
+  version         Version
+  student_answers Json?
+  answers_written Json?
   points_written  Int?
   points_oral     Int?
   studentId       String
@@ -100,6 +102,8 @@ model Midterm {
 model Exam {
   examId          String   @id @default(cuid())
   exam_scan       String?
+  version         Version
+  student_answers Json?
   answers_written Json?
   points_written  Int?
   points_oral     Int?
@@ -125,4 +129,11 @@ enum ExamType {
   LJIR
   ZIR
   DIR
+}
+
+enum Version {
+  A
+  B
+  C
+  D
 }
