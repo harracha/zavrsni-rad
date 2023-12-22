@@ -1,17 +1,22 @@
 import { Router, Request, Response } from 'express';
 import { sessionUserExists } from '../lib/middleware/session-middleware';
 import { userHasRole } from '../lib/middleware/user-role-middleware';
-import { Prisma } from '@prisma/client';
-import { create, createMany, deleteMidterm, updateMidterm } from '../controllers/midterm-controller';
+import { MidtermType, Prisma, Version } from '@prisma/client';
+import { create, createMany, deleteMidterm, list, updateMidterm } from '../controllers/midterm-controller';
+import { testFilter } from '../types/testFilter';
+import { midtermFilterParams } from '../types/midterm-filter';
+import { parseMidtermFilterParams } from '../utils/url-parser/midterm-query-parser';
 
 const midtermRouter = Router();
 
 midtermRouter.post('/createMany', sessionUserExists, userHasRole(['ADMIN', 'PROFESSOR']), async (req: Request, res: Response, next: Function) => {
-    const midtermData: Prisma.MidtermCreateManyInput = req.body;
+    const midtermData:any = req.body;
+
     try {
         const midterms = await createMany(midtermData);
         res.status(200).send(midterms);
     } catch(error){
+        console.error(error)
         res.status(500).send({message: 'Greška pri spajanju na bazu podataka.', error: error})
     }
 })
@@ -50,6 +55,14 @@ midtermRouter.delete('/delete/:midtermId', sessionUserExists, userHasRole(['ADMI
 
 })
 
-midtermRouter.get('/list/:acYear', sessionUserExists, userHasRole(['ADMIN', 'PROFESSOR']))
+midtermRouter.get('/list', sessionUserExists, userHasRole(['ADMIN', 'PROFESSOR']), async(req:Request<any, any, any, midtermFilterParams>, res:Response, next:Function) => {
+    const filter: midtermFilterParams = parseMidtermFilterParams(req.url)
+    try {
+        const midterms = await list(filter)
+        res.status(200).send(midterms)
+    } catch(error){
+        res.status(500).send({message: 'Greška pri spajanju na bazu podataka.', error: error})
+    }
+})
 
 export default midtermRouter;

@@ -1,7 +1,9 @@
-import { Prisma } from "@prisma/client";
+import { MidtermType, Prisma } from "@prisma/client";
 import prisma from "../lib/prisma";
+import { testFilter } from "../types/testFilter";
+import { midtermFilterParams } from "../types/midterm-filter";
 
-export const createMany = async (data: Prisma.MidtermCreateManyInput) => {
+export const createMany = async (data: any) => {
     try {
         const midterms = await prisma.midterm.createMany({
             data: data
@@ -20,7 +22,7 @@ export const create = async (data: Prisma.MidtermCreateInput) => {
         })
         return midterm
     } catch(error){
-        return error
+        throw new Error(`${error}`)
     }
 
 }
@@ -52,5 +54,27 @@ export const deleteMidterm = async (midtermId: string) => {
         return midterm
     } catch(error){
         return error;
+    }
+}
+
+export const list = async (filter: midtermFilterParams) => {
+
+    try {
+        const midterms = await prisma.midterm.findMany({
+            where: {
+                midtermId: {in: filter.midtermId}, 
+                acYear: {in: filter.acYear},
+                MidtermType: {in: filter.midtermType}, 
+                studentId: {in: filter.studentId}, 
+                Student: {
+                    classGroup: {
+                        groupName: {in: filter.classGroupName}
+                    }
+                }
+            }
+        })
+        return midterms
+    } catch(error) {
+        return error
     }
 }

@@ -18,29 +18,31 @@ model Teacher {
   password       String
   profilePicture String?
   Role           SystemRole  @default(PROFESSOR)
-  classGroup     ClassGroup?
-  labGroup       LabGroup?
+  classGroupId   String?
+  classGroup     ClassGroup? @relation(fields: [classGroupId], references: [groupId])
+  LabGroupId     String?
+  labGroup       LabGroup?   @relation(fields: [LabGroupId], references: [groupId])
 
   @@index([teacherId])
   @@index([email])
 }
 
 model Student {
-  studentId      String       @id @default(cuid())
+  studentId      String        @id @default(cuid())
   firstName      String
   lastName       String
-  email          String       @unique
+  email          String        @unique
   password       String
-  JMBAG          String       @unique
+  JMBAG          String        @unique
   acYear         String?
   profilePicture String?
-  Role           SystemRole   @default(STUDENT)
-  classGroupId   String       @unique
-  classGroup     ClassGroup   @relation(fields: [classGroupId], references: [groupId])
-  labGroupId     String       @unique
-  labGroup       LabGroup     @relation(fields: [labGroupId], references: [groupId])
-  labExercise    LabExercise?
-  Homework       Homework?
+  Role           SystemRole    @default(STUDENT)
+  classGroupId   String
+  classGroup     ClassGroup    @relation(fields: [classGroupId], references: [groupId])
+  labGroupId     String
+  labGroup       LabGroup      @relation(fields: [labGroupId], references: [groupId])
+  labExercise    LabExercise[]
+  Homework       Homework[]
   Midterm        Midterm[]
   Exam           Exam[]
 
@@ -54,8 +56,7 @@ model Student {
 model ClassGroup {
   groupId   String    @id @default(cuid())
   groupName String    @unique
-  teacher   Teacher   @relation(fields: [teacherId], references: [teacherId])
-  teacherId String    @unique
+  teacher   Teacher[]
   Students  Student[]
 
   @@index([groupName])
@@ -64,8 +65,7 @@ model ClassGroup {
 model LabGroup {
   groupId   String    @id @default(cuid())
   groupName String    @unique
-  teacher   Teacher?  @relation(fields: [teacherId], references: [teacherId])
-  teacherId String?   @unique
+  teacher   Teacher[]
   Students  Student[]
 
   @@index([groupName])
@@ -73,17 +73,21 @@ model LabGroup {
 
 model LabExercise {
   exerciseId String  @id @default(cuid())
+  labName    LabName
+  acyear     String?
   labPoints  Json?
   kpzPoints  Json?
-  studentId  String  @unique
+  studentId  String
   Student    Student @relation(fields: [studentId], references: [studentId])
 }
 
 model Homework {
-  homeworkId String  @id @default(cuid())
-  studentId  String  @unique
-  Student    Student @relation(fields: [studentId], references: [studentId])
-  points     Json?
+  homeworkId String        @id @default(cuid())
+  name       HomeworkName?
+  acYear     String?
+  studentId  String
+  Student    Student       @relation(fields: [studentId], references: [studentId])
+  points     Float
 }
 
 model Midterm {
@@ -95,6 +99,7 @@ model Midterm {
   points_written  Int?
   points_oral     Int?
   studentId       String
+  acYear          String
   Student         Student     @relation(fields: [studentId], references: [studentId])
   MidtermType     MidtermType
 }
@@ -103,6 +108,7 @@ model Exam {
   examId          String   @id @default(cuid())
   exam_scan       String?
   version         Version
+  acYear          String
   student_answers Json?
   answers_written Json?
   points_written  Int?
@@ -136,4 +142,24 @@ enum Version {
   B
   C
   D
+}
+
+enum HomeworkName {
+  FIRST
+  SECOND
+  THIRD
+  FOURTH
+  FIFTH
+}
+
+enum LabName {
+  FIRST
+  SECOND
+  THIRD
+  FOURTH
+  FIFTH
+  SIXTH
+  SEVENTH
+  EIGHTH
+  NINTH
 }
