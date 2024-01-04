@@ -1,0 +1,2 @@
+- provjeriti kako se bodovi za labose dijele po labosima
+- validacija bodova za labose

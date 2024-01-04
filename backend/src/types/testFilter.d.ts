@@ -1,7 +1,7 @@
-import { Prisma, Version, MidtermType, ExamType } from "@prisma/client";
+import { Prisma, Version, MidtermType, ExamType } from '@prisma/client'
 
 export type testFilter = {
-    acYear?: string;
-    version?: Version, 
-    examType?: MidtermType | ExamType
+  acYear?: string
+  version?: Version
+  examType?: MidtermType | ExamType
 }

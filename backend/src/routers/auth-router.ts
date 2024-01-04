@@ -1,6 +1,6 @@
-import { Router, Request, Response } from 'express';
-import prisma from '../lib/prisma';
+import { Router, Request, Response } from 'express'
+import prisma from '../lib/prisma'
 
-const authRouter = Router();
+const authRouter = Router()
 
-export default authRouter;
+export default authRouter

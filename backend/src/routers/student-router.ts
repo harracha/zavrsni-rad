@@ -1,158 +1,234 @@
-import { Router, Request, Response } from 'express';
-import { userHasRole } from '../lib/middleware/user-role-middleware';
-import { createStudent, deleteStudent, getStudent, list, listStudentsByClassGroup, listStudentsByLabGroup, updateStudent } from '../controllers/student-controller';
-import { sessionUserExists } from '../lib/middleware/session-middleware';
-import { Prisma } from '@prisma/client';
-import prisma from '../lib/prisma';
+import { Router, Request, Response } from 'express'
+import { userHasRole } from '../lib/middleware/user-role-middleware'
+import {
+  createStudent,
+  deleteStudent,
+  getStudent,
+  list,
+  listStudentsByClassGroup,
+  listStudentsByLabGroup,
+  updateStudent,
+} from '../controllers/student-controller'
+import { sessionUserExists } from '../lib/middleware/session-middleware'
+import { Prisma } from '@prisma/client'
+import prisma from '../lib/prisma'
 
-const studentRouter = Router();
+const studentRouter = Router()
 
-studentRouter.post('/login', async (req: Request, res:Response, next:Function) => {
-    const loginEmail: string =  req.body.email;
-    const loginPassword: string =  req.body.password;
+studentRouter.post(
+  '/login',
+  async (req: Request, res: Response, next: Function) => {
+    const loginEmail: string = req.body.email
+    const loginPassword: string = req.body.password
 
     if (!loginEmail || !loginPassword) {
-        return res.status(400).send('User data not defined correctly')
+      return res.status(400).send('User data not defined correctly')
     }
 
-    await prisma.student.findUnique({
+    await prisma.student
+      .findUnique({
         where: {
-            email: loginEmail
-        }, 
+          email: loginEmail,
+        },
         select: {
-            email: true, 
-            password: true, 
-            Role: true
-        }
-    }).then((response) => {
-        if(!response) {
+          email: true,
+          password: true,
+          Role: true,
+        },
+      })
+      .then(response => {
+        if (!response) {
+          return res.status(401).send('Incorrect email or password')
+        } else {
+          if (response.password !== loginPassword) {
             return res.status(401).send('Incorrect email or password')
-        }
-        else {
-            if(response.password !== loginPassword) {
-                return res.status(401).send('Incorrect email or password')
-            }
-            req.session.user = {email: response.email, role: response.Role}
+          }
+          req.session.user = { email: response.email, role: response.Role }
         }
         res.status(200).send(req.session.user)
-    }).catch((error) => {
-        res.status(500).send({error: error, message: 'Failed connecting to database'})
-    });
-})
+      })
+      .catch(error => {
+        res
+          .status(500)
+          .send({ error: error, message: 'Failed connecting to database' })
+      })
+  },
+)
 
 // ADMIN / TEACHER / ASSISTANT FUNCTION -> list students (list by class groupId optional)
-studentRouter.get('/list/:classGroupId', sessionUserExists,userHasRole(['ADMIN', 'PROFESSOR', 'ASSISTANT']), async (req: Request, res: Response, next: Function) => {
-    const groupId = req.params.classGroupId;
+studentRouter.get(
+  '/list/:classGroupId',
+  sessionUserExists,
+  userHasRole(['ADMIN', 'PROFESSOR', 'ASSISTANT']),
+  async (req: Request, res: Response, next: Function) => {
+    const groupId = req.params.classGroupId
 
-    if(groupId) {
-        const students = await listStudentsByClassGroup(groupId).catch((error) => {
-            res.status(500).send({message: 'Failed connecting to database', error: error})
-        })
-        res.status(200).send(students)
+    if (groupId) {
+      const students = await listStudentsByClassGroup(groupId).catch(error => {
+        res
+          .status(500)
+          .send({ message: 'Failed connecting to database', error: error })
+      })
+      res.status(200).send(students)
     } else {
-        res.status(400).send('Class group id not defined properly')
+      res.status(400).send('Class group id not defined properly')
     }
-
-})
+  },
+)
 
 // ADMIN / TEACHER FUNCTION -> list students for certain lab group
-studentRouter.get('/list/:labGroupId',sessionUserExists,userHasRole(['ADMIN', 'PROFESSOR', 'ASSISTANT']),  async (req: Request, res: Response, next: Function) => {
-    const groupId = req.params.labGroupId;
+studentRouter.get(
+  '/list/:labGroupId',
+  sessionUserExists,
+  userHasRole(['ADMIN', 'PROFESSOR', 'ASSISTANT']),
+  async (req: Request, res: Response, next: Function) => {
+    const groupId = req.params.labGroupId
 
     if (!groupId) {
-        res.status(400).send('Class group id not defined properly')
+      res.status(400).send('Class group id not defined properly')
     }
 
     try {
-        const students = await listStudentsByLabGroup(groupId)
-        res.status(200).send(students)
-    } catch (error){
-        res.status(500).send({message: 'Failed connecting to database', error: error})
-
+      const students = await listStudentsByLabGroup(groupId)
+      res.status(200).send(students)
+    } catch (error) {
+      res
+        .status(500)
+        .send({ message: 'Failed connecting to database', error: error })
     }
     res.send('Hello teacher')
-})
+  },
+)
 
-studentRouter.get('/list', sessionUserExists, userHasRole(['ADMIN', 'PROFESSOR', 'ASSISTANT']), async (req: Request, res: Response, next: Function) => {
-
-    try{
-        const students = await list();
-        res.status(200).send(students)
-    } catch(error){
-        res.status(500).send({message: 'Failed connecting to database', error: error})
+studentRouter.get(
+  '/list',
+  sessionUserExists,
+  userHasRole(['ADMIN', 'PROFESSOR', 'ASSISTANT']),
+  async (req: Request, res: Response, next: Function) => {
+    try {
+      const students = await list()
+      res.status(200).send(students)
+    } catch (error) {
+      res
+        .status(500)
+        .send({ message: 'Failed connecting to database', error: error })
     }
-    
-})
+  },
+)
 
-studentRouter.get('/:studentId', sessionUserExists, userHasRole(['ADMIN', 'ASSISTANT', 'PROFESSOR', 'STUDENT']), async (req:Request, res: Response, next: Function) => {
-    const studentId = req.params.studentId;
+studentRouter.get(
+  '/:studentId',
+  sessionUserExists,
+  userHasRole(['ADMIN', 'ASSISTANT', 'PROFESSOR', 'STUDENT']),
+  async (req: Request, res: Response, next: Function) => {
+    const studentId = req.params.studentId
 
-    if (req.session.user?.role === 'STUDENT'){
-        const student = await prisma.student.findUnique({
-            where:{
-                email: req.session.user.email
-            },
-            select: {
-                studentId: true
-            }
+    if (req.session.user?.role === 'STUDENT') {
+      const student = await prisma.student.findUnique({
+        where: {
+          email: req.session.user.email,
+        },
+        select: {
+          studentId: true,
+        },
+      })
+      if (student?.studentId !== studentId) {
+        res
+          .status(403)
+          .send({ message: 'Ne možete pristupiti podatcima drugih studenata.' })
+      }
+    }
+    try {
+      const student = await getStudent(studentId)
+      res.status(200).send(student)
+    } catch (error) {
+      res
+        .status(500)
+        .send({
+          message: 'Greška pri spajanju na bazu podataka.',
+          error: error,
         })
-        if (student?.studentId !== studentId){
-            res.status(403).send({message: 'Ne možete pristupiti podatcima drugih studenata.'})
-        }
     }
-    try{
-        const student = await getStudent(studentId);
-        res.status(200).send(student);
-    }catch(error){
-        res.status(500).send({message: 'Greška pri spajanju na bazu podataka.', error: error})
+  },
+)
+
+studentRouter.post(
+  '/create',
+  sessionUserExists,
+  userHasRole(['ADMIN', 'PROFESSOR', 'ASSISTANT']),
+  async (req: Request, res: Response, next: Function) => {
+    const studentInfo: Prisma.StudentCreateInput = req.body
+
+    try {
+      const newStudent = await createStudent(studentInfo)
+      res.status(200).send(newStudent)
+    } catch (error) {
+      res
+        .status(500)
+        .send({
+          message: 'Greška pri spajanju na bazu podataka.',
+          error: error,
+        })
     }
-})
+  },
+)
 
-studentRouter.post('/create', sessionUserExists, userHasRole(['ADMIN', 'PROFESSOR', 'ASSISTANT']), async (req: Request, res: Response, next: Function) => {
-    const studentInfo: Prisma.StudentCreateInput = req.body;
-
-    try{
-        const newStudent = await createStudent(studentInfo);
-        res.status(200).send(newStudent);
-    } catch(error) {
-        res.status(500).send({message: 'Greška pri spajanju na bazu podataka.', error: error})
-    }
-})
-
-studentRouter.put('/update/:studentId', sessionUserExists, userHasRole(['ADMIN', 'PROFESSOR', 'STUDENT']), async(req:Request, res: Response, next: Function) => {
-    const studentId = req.params.studentId;
+studentRouter.put(
+  '/update/:studentId',
+  sessionUserExists,
+  userHasRole(['ADMIN', 'PROFESSOR', 'STUDENT']),
+  async (req: Request, res: Response, next: Function) => {
+    const studentId = req.params.studentId
     const updateData: Prisma.StudentUpdateInput = req.body
-    if (req.session.user?.role == 'STUDENT'){
-        const student = await prisma.student.findUnique({
-            where:{
-                email: req.session.user.email
-            },
-            select: {
-                studentId: true
-            }
+    if (req.session.user?.role == 'STUDENT') {
+      const student = await prisma.student.findUnique({
+        where: {
+          email: req.session.user.email,
+        },
+        select: {
+          studentId: true,
+        },
+      })
+      if (student?.studentId !== studentId) {
+        res
+          .status(403)
+          .send({ message: 'Ne možete mijenjati podatke drugih studenata.' })
+      }
+    }
+
+    try {
+      const updatedStudent = await updateStudent(studentId, updateData)
+      res.status(200).send(updatedStudent)
+    } catch (error) {
+      res
+        .status(500)
+        .send({
+          message: 'Greška pri spajanju na bazu podataka.',
+          error: error,
         })
-        if (student?.studentId !== studentId){
-            res.status(403).send({message: 'Ne možete mijenjati podatke drugih studenata.'})
-        }
     }
+  },
+)
+
+studentRouter.delete(
+  '/delete/:studentId',
+  sessionUserExists,
+  userHasRole(['ADMIN', 'PROFESSOR']),
+  async (req: Request, res: Response, next: Function) => {
+    const studentId = req.params.studentId
 
     try {
-        const updatedStudent = await updateStudent(studentId, updateData)
-        res.status(200).send(updatedStudent)
-    }catch(error){
-        res.status(500).send({message: 'Greška pri spajanju na bazu podataka.', error: error})
+      const deletedStudent = await deleteStudent(studentId)
+      res.status(200).send(deletedStudent)
+    } catch (error) {
+      res
+        .status(500)
+        .send({
+          message: 'Greška pri spajanju na bazu podataka.',
+          error: error,
+        })
     }
-})
+  },
+)
 
-studentRouter.delete('/delete/:studentId', sessionUserExists, userHasRole(['ADMIN', 'PROFESSOR']), async (req:Request, res:Response, next: Function) => {
-    const studentId = req.params.studentId;
-
-    try {
-        const deletedStudent = await deleteStudent(studentId);
-        res.status(200).send(deletedStudent)
-    }catch(error){
-        res.status(500).send({message: 'Greška pri spajanju na bazu podataka.', error: error})
-    }
-})
-
-export default studentRouter;
+export default studentRouter

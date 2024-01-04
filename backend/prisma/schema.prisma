@@ -75,8 +75,8 @@ model LabExercise {
   exerciseId String  @id @default(cuid())
   labName    LabName
   acyear     String?
-  labPoints  Json?
-  kpzPoints  Json?
+  labPoints  Float?
+  kpzPoints  Float?
   studentId  String
   Student    Student @relation(fields: [studentId], references: [studentId])
 }

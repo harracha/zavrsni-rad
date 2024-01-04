@@ -1,9 +1,9 @@
-import { LabName } from "@prisma/client";
+import { LabName } from '@prisma/client'
 
 export type labFilterParams = {
-    labId?: string[];
-    labName?: LabName[];
-    acYear?: string[];
-    labGroupName?: string[];
-    studentId?: string[];
+  labId?: string[]
+  labName?: LabName[]
+  acYear?: string[]
+  labGroupName?: string[]
+  studentId?: string[]
 }

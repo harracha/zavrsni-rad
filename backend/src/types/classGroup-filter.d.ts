@@ -1,5 +1,5 @@
 export type classGroupFilter = {
-    groupId?: string[];
-    teacherId?: string[];
-    studentId?: string[];
+  groupId?: string[]
+  teacherId?: string[]
+  studentId?: string[]
 }
