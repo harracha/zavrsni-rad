@@ -15,11 +15,9 @@ export const homeworkPointsValidation = async (
 
   homeworkData.map(async homework => {
     if (homework.points > 1 || homework.points < 0) {
-      res
-        .status(400)
-        .send({
-          message: `Bodovi moraju biti u rasponu [0,1]. Vaš unos: ${homework.points}`,
-        })
+      res.status(400).send({
+        message: `Bodovi moraju biti u rasponu [0,1]. Vaš unos: ${homework.points}`,
+      })
     }
   })
   next()

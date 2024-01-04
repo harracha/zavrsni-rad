@@ -1,4 +1,4 @@
-import { Prisma } from '@prisma/client'
+import { Prisma, Student } from '@prisma/client'
 import prisma from '../lib/prisma'
 
 export const listStudentsByClassGroup = async (classGroupId: string) => {
@@ -77,11 +77,12 @@ export const deleteStudent = async (id: string) => {
   }
 }
 
-export const getStudent = async (id: string) => {
+export const getStudent = async (param: string) => {
   try {
     const student = await prisma.student.findUnique({
       where: {
-        studentId: id,
+        studentId: param,
+        OR: [{ email: param }, { JMBAG: param }],
       },
     })
     return student

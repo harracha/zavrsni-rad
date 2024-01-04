@@ -47,23 +47,19 @@ labGroupRouter.get(
       })
 
       if (assistant?.labGroup?.groupId !== id) {
-        res
-          .status(403)
-          .send({
-            message: `Nemate pristup detaljima grupe predavanja koja Vam nije dodijeljena.`,
-          })
+        res.status(403).send({
+          message: `Nemate pristup detaljima grupe predavanja koja Vam nije dodijeljena.`,
+        })
       }
     }
     try {
       const labGroup = await getlabGroup(id)
       res.status(200).send(labGroup)
     } catch (error) {
-      res
-        .send(500)
-        .send({
-          message: 'Greška pri spajanju na bazu podataka.',
-          error: error,
-        })
+      res.send(500).send({
+        message: 'Greška pri spajanju na bazu podataka.',
+        error: error,
+      })
     }
   },
 )
@@ -78,12 +74,10 @@ labGroupRouter.post(
       const newlabGroup = await createlabGroup(labGroupInfo)
       res.status(200).send(newlabGroup)
     } catch (error) {
-      res
-        .status(500)
-        .send({
-          message: 'Greška pri spajanju na bazu podataka.',
-          error: error,
-        })
+      res.status(500).send({
+        message: 'Greška pri spajanju na bazu podataka.',
+        error: error,
+      })
     }
   },
 )
@@ -100,12 +94,10 @@ labGroupRouter.put(
       const updatedGroup = await updatelabGroup(id, updateInfo)
       res.status(200).send(updatedGroup)
     } catch (error) {
-      res
-        .status(500)
-        .send({
-          message: 'Greška pri spajanju na bazu podataka.',
-          error: error,
-        })
+      res.status(500).send({
+        message: 'Greška pri spajanju na bazu podataka.',
+        error: error,
+      })
     }
   },
 )
@@ -120,12 +112,10 @@ labGroupRouter.delete(
       const deletedGroup = await deletelabGroup(id)
       res.send(200).send(deletedGroup)
     } catch (error) {
-      res
-        .status(500)
-        .send({
-          message: 'Greška pri spajanju na bazu podataka.',
-          error: error,
-        })
+      res.status(500).send({
+        message: 'Greška pri spajanju na bazu podataka.',
+        error: error,
+      })
     }
   },
 )

@@ -27,12 +27,10 @@ midtermRouter.post(
       res.status(200).send(midterms)
     } catch (error) {
       console.error(error)
-      res
-        .status(500)
-        .send({
-          message: 'Greška pri spajanju na bazu podataka.',
-          error: error,
-        })
+      res.status(500).send({
+        message: 'Greška pri spajanju na bazu podataka.',
+        error: error,
+      })
     }
   },
 )
@@ -47,12 +45,10 @@ midtermRouter.post(
       const midterm = await create(midtermData)
       res.status(200).send(midterm)
     } catch (error) {
-      res
-        .status(500)
-        .send({
-          message: 'Greška pri spajanju na bazu podataka.',
-          error: error,
-        })
+      res.status(500).send({
+        message: 'Greška pri spajanju na bazu podataka.',
+        error: error,
+      })
     }
   },
 )
@@ -69,12 +65,10 @@ midtermRouter.put(
       const updatedMidterm = await updateMidterm(midtermId, updateData)
       res.status(200).send(updatedMidterm)
     } catch (error) {
-      res
-        .status(500)
-        .send({
-          message: 'Greška pri spajanju na bazu podataka.',
-          error: error,
-        })
+      res.status(500).send({
+        message: 'Greška pri spajanju na bazu podataka.',
+        error: error,
+      })
     }
   },
 )
@@ -90,12 +84,10 @@ midtermRouter.delete(
       const deletedMidterm = await deleteMidterm(midtermId)
       res.status(200).send(deletedMidterm)
     } catch (error) {
-      res
-        .status(500)
-        .send({
-          message: 'Greška pri spajanju na bazu podataka.',
-          error: error,
-        })
+      res.status(500).send({
+        message: 'Greška pri spajanju na bazu podataka.',
+        error: error,
+      })
     }
   },
 )
@@ -114,12 +106,10 @@ midtermRouter.get(
       const midterms = await list(filter)
       res.status(200).send(midterms)
     } catch (error) {
-      res
-        .status(500)
-        .send({
-          message: 'Greška pri spajanju na bazu podataka.',
-          error: error,
-        })
+      res.status(500).send({
+        message: 'Greška pri spajanju na bazu podataka.',
+        error: error,
+      })
     }
   },
 )

@@ -142,12 +142,10 @@ studentRouter.get(
       const student = await getStudent(studentId)
       res.status(200).send(student)
     } catch (error) {
-      res
-        .status(500)
-        .send({
-          message: 'Greška pri spajanju na bazu podataka.',
-          error: error,
-        })
+      res.status(500).send({
+        message: 'Greška pri spajanju na bazu podataka.',
+        error: error,
+      })
     }
   },
 )
@@ -163,12 +161,10 @@ studentRouter.post(
       const newStudent = await createStudent(studentInfo)
       res.status(200).send(newStudent)
     } catch (error) {
-      res
-        .status(500)
-        .send({
-          message: 'Greška pri spajanju na bazu podataka.',
-          error: error,
-        })
+      res.status(500).send({
+        message: 'Greška pri spajanju na bazu podataka.',
+        error: error,
+      })
     }
   },
 )
@@ -200,12 +196,10 @@ studentRouter.put(
       const updatedStudent = await updateStudent(studentId, updateData)
       res.status(200).send(updatedStudent)
     } catch (error) {
-      res
-        .status(500)
-        .send({
-          message: 'Greška pri spajanju na bazu podataka.',
-          error: error,
-        })
+      res.status(500).send({
+        message: 'Greška pri spajanju na bazu podataka.',
+        error: error,
+      })
     }
   },
 )
@@ -221,12 +215,10 @@ studentRouter.delete(
       const deletedStudent = await deleteStudent(studentId)
       res.status(200).send(deletedStudent)
     } catch (error) {
-      res
-        .status(500)
-        .send({
-          message: 'Greška pri spajanju na bazu podataka.',
-          error: error,
-        })
+      res.status(500).send({
+        message: 'Greška pri spajanju na bazu podataka.',
+        error: error,
+      })
     }
   },
 )

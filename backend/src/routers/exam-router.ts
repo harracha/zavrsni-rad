@@ -25,12 +25,10 @@ examRouter.post(
       const exams = await createMany(examData)
       res.status(200).send(exams)
     } catch (error) {
-      res
-        .status(500)
-        .send({
-          message: 'Greška pri spajanju na bazu podataka.',
-          error: error,
-        })
+      res.status(500).send({
+        message: 'Greška pri spajanju na bazu podataka.',
+        error: error,
+      })
     }
   },
 )
@@ -45,12 +43,10 @@ examRouter.post(
       const exam = await create(examData)
       res.status(200).send(exam)
     } catch (error) {
-      res
-        .status(500)
-        .send({
-          message: 'Greška pri spajanju na bazu podataka.',
-          error: error,
-        })
+      res.status(500).send({
+        message: 'Greška pri spajanju na bazu podataka.',
+        error: error,
+      })
     }
   },
 )
@@ -67,12 +63,10 @@ examRouter.put(
       const updatedExam = await updateExam(examId, updateData)
       res.status(200).send(updatedExam)
     } catch (error) {
-      res
-        .status(500)
-        .send({
-          message: 'Greška pri spajanju na bazu podataka.',
-          error: error,
-        })
+      res.status(500).send({
+        message: 'Greška pri spajanju na bazu podataka.',
+        error: error,
+      })
     }
   },
 )
@@ -88,12 +82,10 @@ examRouter.delete(
       const deletedexam = await deleteExam(examId)
       res.status(200).send(deletedexam)
     } catch (error) {
-      res
-        .status(500)
-        .send({
-          message: 'Greška pri spajanju na bazu podataka.',
-          error: error,
-        })
+      res.status(500).send({
+        message: 'Greška pri spajanju na bazu podataka.',
+        error: error,
+      })
     }
   },
 )
@@ -112,12 +104,10 @@ examRouter.get(
       const exams = await list(filter)
       res.status(200).send(exams)
     } catch (error) {
-      res
-        .status(500)
-        .send({
-          message: 'Greška pri spajanju na bazu podataka.',
-          error: error,
-        })
+      res.status(500).send({
+        message: 'Greška pri spajanju na bazu podataka.',
+        error: error,
+      })
     }
   },
 )

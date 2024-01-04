@@ -1,9 +1,4 @@
-import express, {
-  Express,
-  type Request,
-  type Response,
-  type Application,
-} from 'express'
+import express, { Express, Request, Response, Application } from 'express'
 import dotenv from 'dotenv'
 import session from 'express-session'
 import bodyParser from 'body-parser'
@@ -19,7 +14,7 @@ import classGroupRouter from './src/routers/classGroup-router'
 import authRouter from './src/routers/auth-router'
 import { type SystemRole } from '@prisma/client'
 
-// For env File
+//For env File
 dotenv.config()
 
 const app: Application = express()

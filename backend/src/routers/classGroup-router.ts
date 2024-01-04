@@ -49,23 +49,19 @@ classGroupRouter.get(
       })
 
       if (assistant?.classGroup?.groupId !== id) {
-        res
-          .status(403)
-          .send({
-            message: `Nemate pristup detaljima grupe predavanja koja Vam nije dodijeljena.`,
-          })
+        res.status(403).send({
+          message: `Nemate pristup detaljima grupe predavanja koja Vam nije dodijeljena.`,
+        })
       }
     }
     try {
       const classGroup = await getClassGroup(id)
       res.status(200).send(classGroup)
     } catch (error) {
-      res
-        .send(500)
-        .send({
-          message: 'Greška pri spajanju na bazu podataka.',
-          error: error,
-        })
+      res.send(500).send({
+        message: 'Greška pri spajanju na bazu podataka.',
+        error: error,
+      })
     }
   },
 )
@@ -80,12 +76,10 @@ classGroupRouter.post(
       const newClassGroup = await createClassGroup(classGroupInfo)
       res.status(200).send(newClassGroup)
     } catch (error) {
-      res
-        .status(500)
-        .send({
-          message: 'Greška pri spajanju na bazu podataka.',
-          error: error,
-        })
+      res.status(500).send({
+        message: 'Greška pri spajanju na bazu podataka.',
+        error: error,
+      })
     }
   },
 )
@@ -102,12 +96,10 @@ classGroupRouter.put(
       const updatedGroup = await updateClassGroup(id, updateInfo)
       res.status(200).send(updatedGroup)
     } catch (error) {
-      res
-        .status(500)
-        .send({
-          message: 'Greška pri spajanju na bazu podataka.',
-          error: error,
-        })
+      res.status(500).send({
+        message: 'Greška pri spajanju na bazu podataka.',
+        error: error,
+      })
     }
   },
 )
@@ -122,12 +114,10 @@ classGroupRouter.delete(
       const deletedGroup = await deleteClassGroup(id)
       res.send(200).send(deletedGroup)
     } catch (error) {
-      res
-        .status(500)
-        .send({
-          message: 'Greška pri spajanju na bazu podataka.',
-          error: error,
-        })
+      res.status(500).send({
+        message: 'Greška pri spajanju na bazu podataka.',
+        error: error,
+      })
     }
   },
 )

@@ -28,13 +28,11 @@ homeworkRouter.post(
       const homework = await filterExistingHomeworks(homeworkData)
       res.status(200).send(homework)
     } catch (error) {
-      res
-        .status(500)
-        .send({
-          message:
-            'Greška pri spajanju na bazu podataka, molimo pokušajte kasnije.',
-          error,
-        })
+      res.status(500).send({
+        message:
+          'Greška pri spajanju na bazu podataka, molimo pokušajte kasnije.',
+        error,
+      })
     }
   },
 )
@@ -57,13 +55,11 @@ homeworkRouter.get(
       const homework = await listHomeworks(queryParams)
       res.status(200).send(homework)
     } catch (error) {
-      res
-        .status(500)
-        .send({
-          message:
-            'Greška pri spajanju na bazu podataka, molimo pokušajte kasnije.',
-          error,
-        })
+      res.status(500).send({
+        message:
+          'Greška pri spajanju na bazu podataka, molimo pokušajte kasnije.',
+        error,
+      })
     }
   },
 )
@@ -84,13 +80,11 @@ homeworkRouter.put(
       const updatedHomeworks = await updateHomework(updateData)
       res.status(200).send(updatedHomeworks)
     } catch (error) {
-      res
-        .status(500)
-        .send({
-          message:
-            'Greška pri spajanju na bazu podataka, molimo pokušajte kasnije.',
-          error,
-        })
+      res.status(500).send({
+        message:
+          'Greška pri spajanju na bazu podataka, molimo pokušajte kasnije.',
+        error,
+      })
     }
   },
 )
@@ -110,13 +104,11 @@ homeworkRouter.delete(
       const deletedHomeworks = await deleteHomework(deleteData)
       res.status(200).send(deletedHomeworks)
     } catch (error) {
-      res
-        .status(500)
-        .send({
-          message:
-            'Greška pri spajanju na bazu podataka, molimo pokušajte kasnije.',
-          error,
-        })
+      res.status(500).send({
+        message:
+          'Greška pri spajanju na bazu podataka, molimo pokušajte kasnije.',
+        error,
+      })
     }
   },
 )
