@@ -55,6 +55,27 @@ export const deleteExam = async (examId: string) => {
   }
 }
 
+export const deleteExams = async (filter: examFilterParams) => {
+  try {
+    const exams = await prisma.exam.deleteMany({
+      where: {
+        examId: {in: filter.examId},
+        acYear: {in: filter.acYear},
+        Student: {
+          classGroup: {
+            groupName: {in: filter.classGroupName}
+          }
+        }, 
+        ExamType: {in: filter.examType}, 
+        studentId: {in: filter.studentId}
+      }
+    })
+    return exams;
+  } catch (error) {
+    throw error
+  }
+}
+
 export const list = async (filter: examFilterParams) => {
   try {
     const exams = await prisma.exam.findMany({

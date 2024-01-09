@@ -12,45 +12,6 @@ import { sessionUserExists } from '../lib/middleware/session-middleware'
 
 const teacherRouter = Router()
 
-teacherRouter.post(
-  '/login',
-  async (req: Request, res: Response, next: Function) => {
-    const loginEmail: string = req.body.email
-    const loginPassword: string = req.body.password
-
-    if (!loginEmail || !loginPassword) {
-      return res.status(400).send('User data not defined correctly')
-    }
-
-    await prisma.teacher
-      .findUnique({
-        where: {
-          email: loginEmail,
-        },
-        select: {
-          email: true,
-          password: true,
-          Role: true,
-        },
-      })
-      .then(response => {
-        if (!response) {
-          return res.status(401).send('Incorrect email or password')
-        } else {
-          if (response.password !== loginPassword) {
-            return res.status(401).send('Incorrect email or password')
-          }
-          req.session.user = { email: response.email, role: response.Role }
-        }
-        res.status(200).send(req.session.user)
-      })
-      .catch(error => {
-        res
-          .status(500)
-          .send({ error: error, message: 'Failed connecting to database' })
-      })
-  },
-)
 
 // ADMIN FUNCTION -> list all teachers in the database
 teacherRouter.get(

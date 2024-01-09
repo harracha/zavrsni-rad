@@ -1,7 +1,7 @@
 import { Router, type Request, type Response, query } from 'express'
 import { sessionUserExists } from '../lib/middleware/session-middleware'
 import { userHasRole } from '../lib/middleware/user-role-middleware'
-import { type Prisma } from '@prisma/client'
+import { Student, type Prisma } from '@prisma/client'
 import {
   createHomework,
   deleteHomework,
@@ -9,11 +9,14 @@ import {
   listHomeworks,
   listStudentHomeworks,
   updateHomework,
+  updateHomeworks,
 } from '../controllers/homework-controller'
 import { homeworkPointsValidation } from '../lib/middleware/data-validation/homework'
 import prisma from '../lib/prisma'
 import { type homeworkFilterParams } from '../types/homeworkFilter'
 import { parseHomeworkFilterParams } from '../utils/url-parser/homework-query-parser'
+import { getStudent } from '../controllers/student-controller'
+import { update } from '../controllers/teacher-controller'
 
 const homeworkRouter = Router()
 
@@ -38,7 +41,7 @@ homeworkRouter.post(
 )
 
 homeworkRouter.get(
-  '/get',
+  '/list',
   sessionUserExists,
   userHasRole(['ADMIN', 'PROFESSOR', 'ASSISTANT', 'STUDENT']),
   async (
@@ -48,7 +51,8 @@ homeworkRouter.get(
   ) => {
     const queryParams = parseHomeworkFilterParams(req.url)
     if (req.session.user?.role === 'STUDENT') {
-      // staviti njegov ID u query paramse
+      const student = (await getStudent(req.session.user?.email)) as Student
+      queryParams.studentId = [student.studentId]
     }
 
     try {
@@ -64,6 +68,8 @@ homeworkRouter.get(
   },
 )
 
+// za azuriranje vise zadaca odjednom
+
 homeworkRouter.put(
   '/update',
   sessionUserExists,
@@ -77,17 +83,40 @@ homeworkRouter.put(
     const updateData = req.body
 
     try {
-      const updatedHomeworks = await updateHomework(updateData)
+      const updatedHomeworks = await updateHomeworks(updateData)
       res.status(200).send(updatedHomeworks)
     } catch (error) {
       res.status(500).send({
         message:
           'Greška pri spajanju na bazu podataka, molimo pokušajte kasnije.',
-        error,
+        error:error
       })
     }
   },
 )
+
+homeworkRouter.put('/update/:homeworkId', sessionUserExists,
+userHasRole(['ADMIN', 'ASSISTANT', 'PROFESSOR']),
+homeworkPointsValidation,
+async (
+  req: Request<any, any, Prisma.HomeworkUncheckedUpdateInput, any>,
+  res: Response,
+  next: Function,
+) => {
+  const homeworkId = req.params.homeworkId;
+  const updateData = req.body;
+
+  try {
+    const updatedHomework = await updateHomework(homeworkId, updateData)
+    res.status(200).send(updatedHomework)
+  } catch (error) {
+    res.status(500).send({
+      message:
+        'Greška pri spajanju na bazu podataka, molimo pokušajte kasnije.',
+      error:error
+    })
+  }
+})
 
 homeworkRouter.delete(
   '/delete',

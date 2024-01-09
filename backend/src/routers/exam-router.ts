@@ -6,21 +6,25 @@ import {
   create,
   createMany,
   deleteExam,
+  deleteExams,
   list,
   updateExam,
 } from '../controllers/exam-controller'
 import { testFilter } from '../types/testFilter'
 import { examFilterParams } from '../types/exam-flter'
 import { parseExamFilterParams } from '../utils/url-parser/exam-query-parser'
+import { examPointsValidation } from '../lib/middleware/data-validation/exam'
 
 const examRouter = Router()
 
 examRouter.post(
   '/createMany',
   sessionUserExists,
+  examPointsValidation,
   userHasRole(['ADMIN', 'PROFESSOR']),
   async (req: Request, res: Response, next: Function) => {
     const examData: Prisma.ExamCreateManyInput = req.body
+    
     try {
       const exams = await createMany(examData)
       res.status(200).send(exams)
@@ -33,6 +37,7 @@ examRouter.post(
   },
 )
 
+// POTENCIJALNO SE NECE KORISTITI
 examRouter.post(
   '/create',
   sessionUserExists,
@@ -54,6 +59,7 @@ examRouter.post(
 examRouter.put(
   '/update/:examId',
   sessionUserExists,
+  examPointsValidation,
   userHasRole(['ADMIN', 'PROFESSOR']),
   async (req: Request, res: Response, next: Function) => {
     const examId = req.params.examId
@@ -79,8 +85,8 @@ examRouter.delete(
     const examId = req.params.examId
 
     try {
-      const deletedexam = await deleteExam(examId)
-      res.status(200).send(deletedexam)
+      const deletedExam = await deleteExam(examId)
+      res.status(200).send(deletedExam)
     } catch (error) {
       res.status(500).send({
         message: 'Greška pri spajanju na bazu podataka.',
@@ -90,8 +96,25 @@ examRouter.delete(
   },
 )
 
+examRouter.delete('/delete',sessionUserExists,
+userHasRole(['ADMIN', 'PROFESSOR']),
+async (req: Request<any, any, examFilterParams, any>, res: Response, next: Function) => {
+  const deleteFilter = req.body
+
+  try {
+    const deletedExams = await deleteExams(deleteFilter)
+    res.status(200).send(deletedExams)
+  } catch (error) {
+    res.status(500).send({
+      message: 'Greška pri spajanju na bazu podataka.',
+      error: error,
+    })
+  }
+} )
+
+
 examRouter.get(
-  '/get',
+  '/list',
   sessionUserExists,
   userHasRole(['ADMIN', 'PROFESSOR']),
   async (
@@ -111,5 +134,6 @@ examRouter.get(
     }
   },
 )
+
 
 export default examRouter

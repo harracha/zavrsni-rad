@@ -31,7 +31,7 @@ labGroupRouter.get(
 )
 
 labGroupRouter.get(
-  '/:labGroupId',
+  '/get/:labGroupId',
   sessionUserExists,
   userHasRole(['ADMIN', 'ASSISTANT', 'PROFESSOR']),
   async (req: Request, res: Response, next: Function) => {

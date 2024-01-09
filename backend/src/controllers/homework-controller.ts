@@ -76,7 +76,7 @@ export const listHomeworks = async (
   }
 }
 
-export const updateHomework = async (
+export const updateHomeworks = async (
   data: Prisma.HomeworkUncheckedUpdateManyInput,
 ) => {
   try {
@@ -86,6 +86,20 @@ export const updateHomework = async (
     return updatedHomework
   } catch (error) {
     throw new Error(error as string)
+  }
+}
+
+export const updateHomework = async (id:string,data: Prisma.HomeworkUncheckedUpdateInput) => {
+  try {
+    const updatedHomework = await prisma.homework.update({
+      where: {
+        homeworkId: id
+      },
+      data: data
+    })
+    return updatedHomework
+  } catch (error) {
+    throw error
   }
 }
 
@@ -142,7 +156,7 @@ export const filterExistingHomeworks = async (
 
     return await Promise.all([
       createHomework(homeworks as unknown as Prisma.HomeworkCreateManyInput),
-      updateHomework(
+      updateHomeworks(
         existingHomeworks as unknown as Prisma.HomeworkUncheckedUpdateManyInput,
       ),
     ])

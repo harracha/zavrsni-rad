@@ -12,12 +12,14 @@ import {
 import { testFilter } from '../types/testFilter'
 import { midtermFilterParams } from '../types/midterm-filter'
 import { parseMidtermFilterParams } from '../utils/url-parser/midterm-query-parser'
+import { midtermPointsValidation } from '../lib/middleware/data-validation/midterm'
 
 const midtermRouter = Router()
 
 midtermRouter.post(
   '/createMany',
   sessionUserExists,
+  midtermPointsValidation,
   userHasRole(['ADMIN', 'PROFESSOR']),
   async (req: Request, res: Response, next: Function) => {
     const midtermData: any = req.body
@@ -38,6 +40,7 @@ midtermRouter.post(
 midtermRouter.post(
   '/create',
   sessionUserExists,
+  midtermPointsValidation,
   userHasRole(['ADMIN', 'PROFESSOR']),
   async (req: Request, res: Response, next: Function) => {
     const midtermData: Prisma.MidtermCreateInput = req.body

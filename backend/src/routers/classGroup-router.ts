@@ -10,24 +10,26 @@ import {
   updateClassGroup,
 } from '../controllers/classGroup-controller'
 import { Prisma } from '@prisma/client'
+import { classGroupFilter } from '../types/classGroup-filter'
+import { parseClassGroupFilterParams } from '../utils/url-parser/classGroup-query-parser'
 
 const classGroupRouter = Router()
-
-// lsit all class groups
 
 classGroupRouter.get(
   '/list',
   sessionUserExists,
-  userHasRole(['ADMIN', 'PROFESSOR']),
+  userHasRole(['ADMIN', 'PROFESSOR', 'ASSISTANT']),
   async (req: Request, res: Response, next: Function) => {
+    const params: classGroupFilter = parseClassGroupFilterParams(req.url);
+
     try {
-      const classGroups = await list()
+      const classGroups = await list(params)
       res.status(200).send(classGroups)
     } catch (error) {
       console.log(error)
       res
         .status(500)
-        .send({ message: 'Failed connecting to database', error: error })
+        .send({ message: 'Greška pri spajanju na bazu podataka. Molimo pokušajte kasnije.', error: error })
     }
   },
 )
@@ -44,7 +46,7 @@ classGroupRouter.get(
           email: req.session.user.email,
         },
         select: {
-          classGroup: true,
+          classGroup: true
         },
       })
 

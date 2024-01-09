@@ -30,3 +30,34 @@ export const getLabExercises = async (params: labExerciseFilterParams) => {
     throw error
   }
 }
+
+export const updateLabExercises = async (
+  updateData: Prisma.LabExerciseUncheckedUpdateManyInput,
+) => {
+  try {
+    const labs = await prisma.labExercise.updateMany({
+      data: updateData,
+    })
+    return labs
+  } catch (error) {
+    throw error
+  }
+}
+
+export const deleteLabExercises = async (
+  deleteParams: labExerciseFilterParams,
+) => {
+  try {
+    const deletedLabs = await prisma.labExercise.deleteMany({
+      where: {
+        exerciseId: { in: deleteParams.exerciseId },
+        acyear: { in: deleteParams.acYear },
+        labName: { in: deleteParams.labName },
+        studentId: { in: deleteParams.studentId },
+      },
+    })
+    return deletedLabs
+  } catch (error) {
+    throw error
+  }
+}
