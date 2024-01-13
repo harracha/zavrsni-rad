@@ -6,7 +6,7 @@ export const LoginPage = () => {
   const [password, setPassword] = useState("");
 
   const handleLogin = async () => {
-    const loginData = { email: email, password: password };
+   const loginData = { email: email, password: password };
     await fetch(`http://localhost:8000/teacher/login`, {
       method: "POST",
       body: JSON.stringify(loginData),
