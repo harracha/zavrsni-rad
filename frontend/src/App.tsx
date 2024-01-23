@@ -1,22 +1,34 @@
-import React from "react";
 import "./App.css";
-import LoginPage from "./Login";
-import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
-import LandingPage from "./components/Homepage";
-import Layout from "./components/Layout";
+import { BrowserRouter as Router } from "react-router-dom";
+
+import Layout from "./pages/Layout";
 
 function App() {
   return (
-    <Layout>
-      {
-        <Router>
-          <Routes>
-            <Route path="/" Component={LandingPage} />
-            <Route path="/login" Component={LoginPage} />
-          </Routes>
-        </Router>
-      }
-    </Layout>
+    <Router>
+      <Layout />
+    </Router>
+    // <Router>
+    //   {!useLocation().pathname.startsWith("/dashboard") ? (
+    //     <PublicLayout>
+    //       {
+    //         <Routes>
+    //           <Route path="/" Component={LandingPage} />
+    //           <Route path="/login" Component={LoginPage} />
+    //         </Routes>
+    //       }
+    //     </PublicLayout>
+    //   ) : (
+    //     <PrivateLayout>
+    //       {
+    //         <Routes>
+    //           <Route path="/dashboard" Component={LandingPage} />
+    //           <Route path="/dashboard/students" Component={LoginPage} />
+    //         </Routes>
+    //       }
+    //     </PrivateLayout>
+    //   )}
+    // </Router>
   );
 }
 

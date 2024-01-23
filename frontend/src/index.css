@@ -15,3 +15,24 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }
+
+@layer components {
+  .sidebarListItem li {
+    text-align: center;
+    padding: 1rem;
+    transition: background-color 0.3s ease; /* Smooth transition for the background color */
+    transition: color;
+  }
+  
+  /* Hover state */
+  .sidebarListItem li:hover {
+    background-color: #43536e; /* Change the background color on hover */
+    color: black;
+  }
+  
+  /* Selected state */
+  .sidebarListItem li.selected {
+    background-color: #2d3748; /* Change the background color for the selected item */
+    color: black
+  }
+}

@@ -33,7 +33,7 @@ const LandingPage: React.FC = () => {
       style={{ backgroundImage: `url(${landingImage})` }}
     >
       {/* Dimming overlay */}
-      <div className="absolute inset-0 bg-black opacity-50"></div>
+      <div className="absolute inset-0 bg-black opacity-80"></div>
 
       <div className="text-white text-center relative z-10">
         <h1 className="text-3xl font-bold mb-4">Statistička aplikacija</h1>
