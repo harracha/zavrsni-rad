@@ -1,6 +1,6 @@
-"use strict";
+'use strict'
 const filter = {
-    acYear: 2019,
-    version: 'a',
-    midtermType: 'ZI',
-};
+  acYear: 2019,
+  version: 'a',
+  midtermType: 'ZI',
+}

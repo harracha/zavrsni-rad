@@ -13,6 +13,8 @@ import examRouter from './src/routers/exam-router'
 import classGroupRouter from './src/routers/classGroup-router'
 import authRouter from './src/routers/auth-router'
 import { type SystemRole } from '@prisma/client'
+import enrollmentRouter from './src/routers/enrollment-router'
+import resultsRouter from './src/routers/results-router'
 
 //For env File
 dotenv.config()
@@ -36,7 +38,7 @@ app.use((req: Request, res: Response, next: Function) => {
   const resetText = '\x1b[0m'
 
   console.log(
-    `${yellowText}Request received for ${req.method} ${req.path}${resetText}\n`,
+    `${yellowText}Request received for ${req.method} ${req.url}${resetText}\n`,
   )
 
   next()
@@ -72,6 +74,8 @@ app.use('/labExercise', labExerciseRouter)
 app.use('/homework', homeworkRouter)
 app.use('/exam', examRouter)
 app.use('/classGroup', classGroupRouter)
+app.use('/enrollment', enrollmentRouter)
+app.use('/results', resultsRouter)
 
 app.listen(port, () => {
   console.log(`Server is at http://localhost:${port}\n\n`)

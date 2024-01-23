@@ -12,7 +12,6 @@ import { sessionUserExists } from '../lib/middleware/session-middleware'
 
 const teacherRouter = Router()
 
-
 // ADMIN FUNCTION -> list all teachers in the database
 teacherRouter.get(
   '/list',

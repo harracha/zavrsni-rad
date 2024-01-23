@@ -24,7 +24,7 @@ examRouter.post(
   userHasRole(['ADMIN', 'PROFESSOR']),
   async (req: Request, res: Response, next: Function) => {
     const examData: Prisma.ExamCreateManyInput = req.body
-    
+
     try {
       const exams = await createMany(examData)
       res.status(200).send(exams)
@@ -43,7 +43,7 @@ examRouter.post(
   sessionUserExists,
   userHasRole(['ADMIN', 'PROFESSOR']),
   async (req: Request, res: Response, next: Function) => {
-    const examData: Prisma.ExamCreateInput = req.body
+    const examData: Prisma.ExamUncheckedCreateInput = req.body
     try {
       const exam = await create(examData)
       res.status(200).send(exam)
@@ -96,22 +96,28 @@ examRouter.delete(
   },
 )
 
-examRouter.delete('/delete',sessionUserExists,
-userHasRole(['ADMIN', 'PROFESSOR']),
-async (req: Request<any, any, examFilterParams, any>, res: Response, next: Function) => {
-  const deleteFilter = req.body
+examRouter.delete(
+  '/delete',
+  sessionUserExists,
+  userHasRole(['ADMIN', 'PROFESSOR']),
+  async (
+    req: Request<any, any, examFilterParams, any>,
+    res: Response,
+    next: Function,
+  ) => {
+    const deleteFilter = req.body
 
-  try {
-    const deletedExams = await deleteExams(deleteFilter)
-    res.status(200).send(deletedExams)
-  } catch (error) {
-    res.status(500).send({
-      message: 'Greška pri spajanju na bazu podataka.',
-      error: error,
-    })
-  }
-} )
-
+    try {
+      const deletedExams = await deleteExams(deleteFilter)
+      res.status(200).send(deletedExams)
+    } catch (error) {
+      res.status(500).send({
+        message: 'Greška pri spajanju na bazu podataka.',
+        error: error,
+      })
+    }
+  },
+)
 
 examRouter.get(
   '/list',
@@ -134,6 +140,5 @@ examRouter.get(
     }
   },
 )
-
 
 export default examRouter

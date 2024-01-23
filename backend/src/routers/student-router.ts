@@ -7,14 +7,18 @@ import {
   list,
   listStudentsByClassGroup,
   listStudentsByLabGroup,
+  tempUpdate,
   updateStudent,
 } from '../controllers/student-controller'
 import { sessionUserExists } from '../lib/middleware/session-middleware'
 import { Prisma } from '@prisma/client'
 import prisma from '../lib/prisma'
+import { studentFilterParams } from '../types/student-filter'
+import { parseStudentFilterParams } from '../utils/url-parser/student-query-parser'
+import { paginationInfo } from '../types/pagination'
+import { paginationQueryParser } from '../utils/url-parser/pagination-query-parser'
 
 const studentRouter = Router()
-
 
 // ADMIN / TEACHER / ASSISTANT FUNCTION -> list students (list by class groupId optional)
 studentRouter.get(
@@ -63,11 +67,17 @@ studentRouter.get(
 
 studentRouter.get(
   '/list',
-  sessionUserExists,
-  userHasRole(['ADMIN', 'PROFESSOR', 'ASSISTANT']),
-  async (req: Request, res: Response, next: Function) => {
+  // sessionUserExists,
+  // userHasRole(['ADMIN', 'PROFESSOR', 'ASSISTANT']),
+  async (
+    req: Request<any, any, any, studentFilterParams & paginationInfo>,
+    res: Response,
+    next: Function,
+  ) => {
     try {
-      const students = await list()
+      const paginationInfo: paginationInfo = paginationQueryParser(req.url)
+      const filter: studentFilterParams = parseStudentFilterParams(req.url)
+      const students = await list(filter, paginationInfo)
       res.status(200).send(students)
     } catch (error) {
       res
@@ -79,8 +89,8 @@ studentRouter.get(
 
 studentRouter.get(
   '/:uniqueParam',
-  sessionUserExists,
-  userHasRole(['ADMIN', 'ASSISTANT', 'PROFESSOR', 'STUDENT']),
+  // sessionUserExists,
+  // userHasRole(['ADMIN', 'ASSISTANT', 'PROFESSOR', 'STUDENT']),
   async (req: Request, res: Response, next: Function) => {
     const studentId = req.params.uniqueParam
 
@@ -167,8 +177,8 @@ studentRouter.put(
 
 studentRouter.delete(
   '/delete/:studentId',
-  sessionUserExists,
-  userHasRole(['ADMIN', 'PROFESSOR']),
+  // sessionUserExists,
+  // userHasRole(['ADMIN', 'PROFESSOR']),
   async (req: Request, res: Response, next: Function) => {
     const studentId = req.params.studentId
 
@@ -183,5 +193,10 @@ studentRouter.delete(
     }
   },
 )
+
+studentRouter.post('/tempUpdate', async (req: Request, res: Response) => {
+  const cum = await tempUpdate()
+  res.status(200).send(cum)
+})
 
 export default studentRouter

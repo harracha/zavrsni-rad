@@ -12,24 +12,35 @@ import {
 import { Prisma } from '@prisma/client'
 import { classGroupFilter } from '../types/classGroup-filter'
 import { parseClassGroupFilterParams } from '../utils/url-parser/classGroup-query-parser'
+import { paginationInfo } from '../types/pagination'
+import { paginationQueryParser } from '../utils/url-parser/pagination-query-parser'
 
 const classGroupRouter = Router()
 
 classGroupRouter.get(
   '/list',
-  sessionUserExists,
-  userHasRole(['ADMIN', 'PROFESSOR', 'ASSISTANT']),
-  async (req: Request, res: Response, next: Function) => {
-    const params: classGroupFilter = parseClassGroupFilterParams(req.url);
+  // sessionUserExists,
+  // userHasRole(['ADMIN', 'PROFESSOR', 'ASSISTANT']),
+  async (
+    req: Request<any, any, any, classGroupFilter & paginationInfo>,
+    res: Response,
+    next: Function,
+  ) => {
+    const params: classGroupFilter = parseClassGroupFilterParams(req.url)
+    const paginationInfo: paginationInfo = paginationQueryParser(req.url)
 
     try {
-      const classGroups = await list(params)
+      const classGroups = await list(params, paginationInfo)
       res.status(200).send(classGroups)
     } catch (error) {
       console.log(error)
       res
         .status(500)
-        .send({ message: 'Greška pri spajanju na bazu podataka. Molimo pokušajte kasnije.', error: error })
+        .send({
+          message:
+            'Greška pri spajanju na bazu podataka. Molimo pokušajte kasnije.',
+          error: error,
+        })
     }
   },
 )
@@ -46,7 +57,7 @@ classGroupRouter.get(
           email: req.session.user.email,
         },
         select: {
-          classGroup: true
+          classGroup: true,
         },
       })
 

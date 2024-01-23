@@ -27,17 +27,37 @@ model Teacher {
   @@index([email])
 }
 
+model Results {
+  resultId       String     @id @default(cuid())
+  enrollmentId   String     @unique
+  enrollment     Enrollment @relation(fields: [enrollmentId], references: [enrollmentId])
+  hw_points      Float?
+  class_points   Float?
+  lab_points     Float?
+  kpz_points     Float?
+  oral_points    Float?
+  written_points Float?
+  exam           Boolean?   @default(false)
+  lab_condition  Boolean?   @default(false)
+  total_points   Float?
+  grade          Int?
+  grade_refused  Boolean?   @default(false)
+}
+
 model Student {
-  studentId      String       @id @default(cuid())
+  studentId      String        @id @default(cuid())
   firstName      String
   lastName       String
-  email          String       @unique
+  email          String        @unique
   password       String
-  JMBAG          String       @unique
-  acYear         String?
+  JMBAG          String        @unique
   profilePicture String?
-  Role           SystemRole   @default(STUDENT)
+  Role           SystemRole    @default(STUDENT)
   Enrollment     Enrollment[]
+  Exam           Exam[]
+  Midterm        Midterm[]
+  Homework       Homework[]
+  LabExercise    LabExercise[]
 
   @@index([studentId])
   @@index([JMBAG])
@@ -46,16 +66,21 @@ model Student {
 
 model Enrollment {
   enrollmentId String     @id @default(cuid())
+  studentId    String
   studentJMBAG String
-  student      Student    @relation(fields: [studentJMBAG], references: [JMBAG])
+  student      Student    @relation(fields: [studentId], references: [studentId])
   acYear       String
+  createdAt    DateTime   @default(now())
   repeater     Boolean    @default(false)
   nr_repeat    Int        @default(0)
   classGroup   ClassGroup @relation(fields: [classGroupId], references: [groupId])
   classGroupId String
   labGroup     LabGroup   @relation(fields: [labGroupId], references: [groupId])
   labGroupId   String
+  Results      Results[]
 
+  @@unique([studentId, acYear, classGroupId])
+  @@unique([studentId, acYear, labGroupId])
   @@index([studentJMBAG])
   @@index([classGroupId])
   @@index([labGroupId])
@@ -85,14 +110,18 @@ model LabGroup {
 }
 
 model LabExercise {
-  exerciseId String   @id @default(cuid())
+  exerciseId String    @id @default(cuid())
   labName    LabName
-  acyear     String?
-  labPoints  Float?
-  kpzPoints  Float?
-  LabGroup   LabGroup @relation(fields: [labGroupId], references: [groupId])
+  acyear     String
+  createdAt  DateTime? @default(now())
+  labPoints  Float
+  kpzPoints  Float
+  LabGroup   LabGroup  @relation(fields: [labGroupId], references: [groupId])
   labGroupId String
+  Student    Student   @relation(fields: [studentId], references: [studentId])
+  studentId  String
 
+  @@unique([labName, acyear, studentId])
   @@index([acyear])
   @@index([labGroupId])
   @@index([acyear, labGroupId])
@@ -102,10 +131,14 @@ model Homework {
   homeworkId   String       @id @default(cuid())
   name         HomeworkName
   acYear       String?
+  createdAt    DateTime?    @default(now())
   points       Float
   ClassGroup   ClassGroup   @relation(fields: [classGroupId], references: [groupId])
   classGroupId String
+  Student      Student      @relation(fields: [studentId], references: [studentId])
+  studentId    String
 
+  @@unique([name, acYear, studentId])
   @@index([acYear])
   @@index([classGroupId])
   @@index([acYear, classGroupId])
@@ -114,16 +147,20 @@ model Homework {
 model Midterm {
   midtermId       String      @id @default(cuid())
   exam_scan       String?
+  createdAt       DateTime?   @default(now())
   version         Version
   student_answers Json?
   answers_written Json?
   points_written  Float
-  points_oral     Float
+  points_oral     Float?
   acYear          String
   MidtermType     MidtermType
   ClassGroup      ClassGroup  @relation(fields: [classGroupId], references: [groupId])
   classGroupId    String
+  Student         Student     @relation(fields: [studentId], references: [studentId])
+  studentId       String
 
+  @@unique([studentId, MidtermType, acYear])
   @@index([acYear])
   @@index([classGroupId])
   @@index([acYear, classGroupId])
@@ -132,16 +169,18 @@ model Midterm {
 model Exam {
   examId          String     @id @default(cuid())
   exam_scan       String?
+  createdAt       DateTime?  @default(now())
   version         Version
   acYear          String
   student_answers Json?
   answers_written Json?
-  points_written  Int?
-  points_oral     Int?
-  studentId       String
+  points_written  Float
+  points_oral     Float?
   ExamType        ExamType
   ClassGroup      ClassGroup @relation(fields: [classGroupId], references: [groupId])
   classGroupId    String
+  Student         Student    @relation(fields: [studentId], references: [studentId])
+  studentId       String
 
   @@index([classGroupId])
   @@index([acYear])

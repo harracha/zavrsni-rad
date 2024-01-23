@@ -1,5 +1,4 @@
-
-const csvJson =[
+[
   {
     "enrollmentId": "clrjx5yik006313li2pgveg0s",
     "studentId": "1LNHL9DK8FG121123",
@@ -991,7 +990,3 @@ const csvJson =[
     "labGroupId": 2
   }
 ]
-
-const ids = csvJson.map(e => e.enrollmentId)
-
-console.log(ids)

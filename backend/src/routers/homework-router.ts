@@ -3,8 +3,8 @@ import { sessionUserExists } from '../lib/middleware/session-middleware'
 import { userHasRole } from '../lib/middleware/user-role-middleware'
 import { Student, type Prisma } from '@prisma/client'
 import {
-  createHomework,
-  deleteHomework,
+  createHomeworks,
+  deleteHomeworks,
   filterExistingHomeworks,
   listHomeworks,
   listStudentHomeworks,
@@ -89,34 +89,37 @@ homeworkRouter.put(
       res.status(500).send({
         message:
           'Greška pri spajanju na bazu podataka, molimo pokušajte kasnije.',
-        error:error
+        error: error,
       })
     }
   },
 )
 
-homeworkRouter.put('/update/:homeworkId', sessionUserExists,
-userHasRole(['ADMIN', 'ASSISTANT', 'PROFESSOR']),
-homeworkPointsValidation,
-async (
-  req: Request<any, any, Prisma.HomeworkUncheckedUpdateInput, any>,
-  res: Response,
-  next: Function,
-) => {
-  const homeworkId = req.params.homeworkId;
-  const updateData = req.body;
+homeworkRouter.put(
+  '/update/:homeworkId',
+  sessionUserExists,
+  userHasRole(['ADMIN', 'ASSISTANT', 'PROFESSOR']),
+  homeworkPointsValidation,
+  async (
+    req: Request<any, any, Prisma.HomeworkUncheckedUpdateInput, any>,
+    res: Response,
+    next: Function,
+  ) => {
+    const homeworkId = req.params.homeworkId
+    const updateData = req.body
 
-  try {
-    const updatedHomework = await updateHomework(homeworkId, updateData)
-    res.status(200).send(updatedHomework)
-  } catch (error) {
-    res.status(500).send({
-      message:
-        'Greška pri spajanju na bazu podataka, molimo pokušajte kasnije.',
-      error:error
-    })
-  }
-})
+    try {
+      const updatedHomework = await updateHomework(homeworkId, updateData)
+      res.status(200).send(updatedHomework)
+    } catch (error) {
+      res.status(500).send({
+        message:
+          'Greška pri spajanju na bazu podataka, molimo pokušajte kasnije.',
+        error: error,
+      })
+    }
+  },
+)
 
 homeworkRouter.delete(
   '/delete',
@@ -130,7 +133,7 @@ homeworkRouter.delete(
     const deleteData = req.body
 
     try {
-      const deletedHomeworks = await deleteHomework(deleteData)
+      const deletedHomeworks = await deleteHomeworks(deleteData)
       res.status(200).send(deletedHomeworks)
     } catch (error) {
       res.status(500).send({

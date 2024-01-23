@@ -43,7 +43,7 @@ midtermRouter.post(
   midtermPointsValidation,
   userHasRole(['ADMIN', 'PROFESSOR']),
   async (req: Request, res: Response, next: Function) => {
-    const midtermData: Prisma.MidtermCreateInput = req.body
+    const midtermData: Prisma.MidtermUncheckedCreateInput = req.body
     try {
       const midterm = await create(midtermData)
       res.status(200).send(midterm)

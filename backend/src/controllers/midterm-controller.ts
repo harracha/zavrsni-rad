@@ -14,12 +14,90 @@ export const createMany = async (data: any) => {
   }
 }
 
-export const create = async (data: Prisma.MidtermCreateInput) => {
+export const create = async (data: Prisma.MidtermUncheckedCreateInput) => {
   try {
-    const midterm = await prisma.midterm.create({
-      data: data,
+    const transaction = await prisma.$transaction(async tp => {
+      const midterm = await tp.midterm.upsert({
+        where: {
+          studentId_MidtermType_acYear: {
+            studentId: data.studentId,
+            MidtermType: data.MidtermType,
+            acYear: data.acYear,
+          },
+        },
+        update: {
+          points_written: data.points_written || undefined,
+          points_oral: data?.points_oral || undefined,
+        },
+        create: data,
+        include: {
+          ClassGroup: {
+            select: {
+              Enrollment: {
+                where: {
+                  studentId: data.studentId,
+                  acYear: data.acYear,
+                  classGroupId: data.classGroupId,
+                },
+                select: {
+                  enrollmentId: true,
+                },
+              },
+            },
+          },
+        },
+      })
+
+      const examFlag = await tp.results
+        .findUnique({
+          where: {
+            enrollmentId: midterm.ClassGroup.Enrollment[0].enrollmentId,
+          },
+          select: {
+            exam: true,
+          },
+        })
+        .then(response => response?.exam)
+
+      if (!examFlag) {
+        const midtermPoints: { points_written: number; points_oral: number } =
+          await tp.midterm
+            .findMany({
+              where: {
+                studentId: data.studentId,
+                acYear: data.acYear,
+              },
+              select: {
+                points_oral: true,
+                points_written: true,
+              },
+            })
+            .then(response => {
+              return {
+                points_written: response.reduce((prevValue, accumulator) => {
+                  return prevValue + accumulator.points_written
+                }, 0),
+                points_oral: response.reduce((prevValue, accumulator) => {
+                  if (accumulator.points_oral) {
+                    return prevValue + accumulator.points_oral
+                  } else return prevValue
+                }, 0),
+              }
+            })
+
+        await tp.results.update({
+          where: {
+            enrollmentId: midterm.ClassGroup.Enrollment[0].enrollmentId,
+          },
+          data: {
+            written_points: midtermPoints.points_written || undefined,
+            oral_points: midtermPoints.points_oral || undefined,
+          },
+        })
+      }
+      return midterm
     })
-    return midterm
+    return transaction
   } catch (error) {
     throw new Error(`${error}`)
   }
@@ -27,9 +105,12 @@ export const create = async (data: Prisma.MidtermCreateInput) => {
 
 export const updateMidterm = async (
   midtermId: string,
-  data: Prisma.MidtermUpdateInput,
+  data: Prisma.MidtermUncheckedUpdateInput,
 ) => {
   try {
+    // const transaction = await prisma.$transaction(async(tp) => {
+
+    // })
     const updatedMidterm = await prisma.midterm.update({
       where: {
         midtermId: midtermId,
@@ -63,10 +144,8 @@ export const list = async (filter: midtermFilterParams) => {
         acYear: { in: filter.acYear },
         MidtermType: { in: filter.midtermType },
         studentId: { in: filter.studentId },
-        Student: {
-          classGroup: {
-            groupName: { in: filter.classGroupName },
-          },
+        ClassGroup: {
+          groupName: { in: filter.classGroupName },
         },
       },
     })

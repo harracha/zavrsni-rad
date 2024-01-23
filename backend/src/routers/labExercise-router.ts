@@ -3,10 +3,10 @@ import { sessionUserExists } from '../lib/middleware/session-middleware'
 import { userHasRole } from '../lib/middleware/user-role-middleware'
 import { Prisma, Student } from '@prisma/client'
 import {
-  createLabExercises,
+  createLabExercise,
   deleteLabExercises,
   getLabExercises,
-  updateLabExercises,
+  updateLabExercise,
 } from '../controllers/labExercise-controller'
 import { labExerciseFilterParams } from '../types/labExercise-filter'
 import { parseLabExerciseFilterParams } from '../utils/url-parser/labExercise-query-parser'
@@ -22,16 +22,14 @@ labExerciseRouter.post(
     const exerciseData: Prisma.LabExerciseCreateManyInput = req.body
 
     try {
-      const labs = await createLabExercises(exerciseData)
+      const labs = await createLabExercise(exerciseData)
       res.status(200).send(labs)
     } catch (error) {
-      res
-        .status(500)
-        .send({
-          message:
-            'Greška pri spajanju na bazu podataka. Molimo pokušajte kasnije.',
-          error: error,
-        })
+      res.status(500).send({
+        message:
+          'Greška pri spajanju na bazu podataka. Molimo pokušajte kasnije.',
+        error: error,
+      })
     }
   },
 )
@@ -53,13 +51,11 @@ labExerciseRouter.get(
       const labs = await getLabExercises(params)
       res.status(200).send(labs)
     } catch (error) {
-      res
-        .status(500)
-        .send({
-          message:
-            'Greška pri spajanju na bazu podataka. Molimo pokušajte kasnije.',
-          error: error,
-        })
+      res.status(500).send({
+        message:
+          'Greška pri spajanju na bazu podataka. Molimo pokušajte kasnije.',
+        error: error,
+      })
     }
   },
 )
@@ -71,21 +67,19 @@ labExerciseRouter.put(
   async (
     req: Request<any, any, Prisma.LabExerciseUncheckedUpdateManyInput>,
     res: Response,
-    next: Function
+    next: Function,
   ) => {
     const updateData = req.body
 
     try {
-      const updatedLabs = await updateLabExercises(updateData)
+      const updatedLabs = await updateLabExercise(updateData)
       res.status(200).send(updatedLabs)
     } catch (error) {
-      res
-        .status(500)
-        .send({
-          message:
-            'Greška pri spajanju na bazu podataka. Molimo pokušajte kasnije.',
-          error: error,
-        })
+      res.status(500).send({
+        message:
+          'Greška pri spajanju na bazu podataka. Molimo pokušajte kasnije.',
+        error: error,
+      })
     }
   },
 )
@@ -103,13 +97,11 @@ labExerciseRouter.delete(
       const deletedLabs = await deleteLabExercises(params)
       return deletedLabs
     } catch (error) {
-      res
-        .status(500)
-        .send({
-          message:
-            'Greška pri spajanju na bazu podataka. Molimo pokušajte kasnije.',
-          error: error,
-        })
+      res.status(500).send({
+        message:
+          'Greška pri spajanju na bazu podataka. Molimo pokušajte kasnije.',
+        error: error,
+      })
     }
   },
 )

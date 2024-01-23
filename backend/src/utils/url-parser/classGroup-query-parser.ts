@@ -16,16 +16,32 @@ export const parseClassGroupFilterParams = (url: string) => {
     if (split_parameter.length !== 1) {
       switch (split_parameter[0]) {
         case 'groupId':
-          filter.groupId = split_parameter[1].split(',')
+          filter.groupId = !['undefined', '------'].includes(split_parameter[1])
+            ? split_parameter[1]
+            : undefined
           break
         case 'teacherId':
-          filter.teacherId = split_parameter[1].split(',') as ExamType[]
+          filter.teacherId = !['undefined', '------'].includes(
+            split_parameter[1],
+          )
+            ? split_parameter[1]
+            : undefined
           break
         case 'studentId':
-          filter.studentId = split_parameter[1].split(',')
+          filter.studentId = !['undefined', '------'].includes(
+            split_parameter[1],
+          )
+            ? split_parameter[1]
+            : undefined
+          break
+        case 'acYear':
+          filter.acYear = !['undefined', '------'].includes(split_parameter[1])
+            ? split_parameter[1]
+            : undefined
+          console.log(filter.acYear)
           break
         default:
-          console.log(`error parameter -> ${split_parameter[0]}`)
+        // console.log(`error parameter -> ${split_parameter[0]}`)
       }
     }
   })
